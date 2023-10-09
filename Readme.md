@@ -97,3 +97,9 @@ npm install @prisma/client
 npm i express dotenv bcryptjs cors nodemailer helmet http-errors jsonwebtoken
 npm i -D @types/bcryptjs @types/cors @types/nodemailer @types/http-errors @types/jsonwebtoken
 ```
+
+## Step - 14: push all the database schema
+
+```sh
+npx prisma db push
+```
