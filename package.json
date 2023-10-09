@@ -14,12 +14,25 @@
   "author": "Ashirbad Panigrahi",
   "license": "ISC",
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.4",
+    "@types/cors": "^2.8.14",
+    "@types/http-errors": "^2.0.2",
+    "@types/jsonwebtoken": "^9.0.3",
     "@types/node": "^20.8.3",
+    "@types/nodemailer": "^6.4.11",
     "prisma": "^5.4.1",
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "@prisma/client": "^5.4.1"
+    "@prisma/client": "^5.4.1",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "helmet": "^7.0.0",
+    "http-errors": "^2.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^6.9.5"
   }
 }

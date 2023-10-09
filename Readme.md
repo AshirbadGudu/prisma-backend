@@ -90,3 +90,10 @@ npx prisma init --datasource-provider mongodb
 ```sh
 npm install @prisma/client
 ```
+
+## Step - 13: Install some basic packages & it's devDependencies
+
+```sh
+npm i express dotenv bcryptjs cors nodemailer helmet http-errors jsonwebtoken
+npm i -D @types/bcryptjs @types/cors @types/nodemailer @types/http-errors @types/jsonwebtoken
+```
