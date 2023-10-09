@@ -98,8 +98,14 @@ npm i express dotenv bcryptjs cors nodemailer helmet http-errors jsonwebtoken
 npm i -D @types/bcryptjs @types/cors @types/nodemailer @types/http-errors @types/jsonwebtoken
 ```
 
-## Step - 14: push all the database schema
+## Step - 14: Push all the database schema
 
 ```sh
 npx prisma db push
+```
+
+## Step - 15: Generate database schema
+
+```sh
+npx prisma generate
 ```
