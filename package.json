@@ -1,0 +1,16 @@
+{
+  "name": "prisma-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "server": "nodemon ./server/index.ts",
+    "build": "tsc",
+    "start": "node ./build",
+    "studio": "prisma studio",
+    "generate": "prisma generate"
+  },
+  "keywords": [],
+  "author": "Ashirbad Panigrahi",
+  "license": "ISC"
+}
