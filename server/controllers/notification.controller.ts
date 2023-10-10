@@ -98,11 +98,24 @@ export const notificationController: {
 
   async deleteAll(req, res, next) {
     try {
-      const deletedNotifications = await notificationService.deleteAll();
+      const { userIds, notificationIds, removeReadData } = req.query;
+
+      const deletedNotifications = await notificationService.deleteAll({
+        userIds:
+          typeof userIds === "string" ? userIds?.split?.(",") : undefined,
+        notificationIds:
+          typeof notificationIds === "string"
+            ? notificationIds.split(",")
+            : undefined,
+        removeReadData:
+          removeReadData === "true" || removeReadData === "false"
+            ? JSON.parse(removeReadData)
+            : undefined,
+      });
 
       res.json({
         success: true,
-        msg: "All notifications deleted successfully",
+        msg: "Notifications deleted successfully",
         data: deletedNotifications,
       });
     } catch (error) {

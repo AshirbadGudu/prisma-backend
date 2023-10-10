@@ -1,4 +1,4 @@
-import { body, param } from "express-validator";
+import { body, param, query } from "express-validator";
 export const NotificationValidation = {
   create: [
     body("title")
@@ -110,4 +110,35 @@ export const NotificationValidation = {
   readById: [param("id").isMongoId().withMessage("Invalid ID")],
 
   delete: [param("id").isMongoId().withMessage("Invalid ID")],
+
+  deleteAll: [
+    query("userIds")
+      .optional()
+      .isArray({ min: 1 })
+      .withMessage("userIds must be an array with at least one element")
+      .custom((value) => {
+        for (const userId of value) {
+          if (!/^[0-9a-fA-F]{24}$/.test(userId)) {
+            throw new Error("User IDs must be valid MongoDB IDs");
+          }
+        }
+        return true;
+      }),
+    query("notificationIds")
+      .optional()
+      .isArray({ min: 1 })
+      .withMessage("notificationIds must be an array with at least one element")
+      .custom((value) => {
+        for (const notificationId of value) {
+          if (!/^[0-9a-fA-F]{24}$/.test(notificationId)) {
+            throw new Error("Notification IDs must be valid MongoDB IDs");
+          }
+        }
+        return true;
+      }),
+    query("removeReadData")
+      .optional()
+      .isBoolean()
+      .withMessage("removeReadData must be a boolean value"),
+  ],
 };

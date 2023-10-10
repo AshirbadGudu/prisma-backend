@@ -95,12 +95,44 @@ export const notificationService = {
     return notification;
   },
 
-  async deleteAll() {
-    // Delete all notifications
-    const deletedNotifications = await prisma.notification.deleteMany({});
+  async deleteAll({
+    userIds,
+    notificationIds,
+    removeReadData,
+  }: {
+    userIds?: string[];
+    notificationIds?: string[];
+    removeReadData?: boolean;
+  } = {}) {
+    let where: Prisma.NotificationWhereInput = {};
+
+    if (userIds) {
+      where = {
+        user: { id: { in: userIds } },
+      };
+    }
+
+    if (notificationIds) {
+      where = {
+        ...where,
+        id: { in: notificationIds },
+      };
+    }
+
+    if (removeReadData !== undefined) {
+      where = {
+        ...where,
+        isRead: removeReadData,
+      };
+    }
+
+    // Delete matching notifications
+    const deletedNotifications = await prisma.notification.deleteMany({
+      where,
+    });
+
     return deletedNotifications;
   },
-
   async sendToMultipleUsers(
     userIds: string[],
     input: Prisma.NotificationCreateInput,
