@@ -1,5 +1,5 @@
-import { config } from "dotenv";
 import { PrismaClient } from "@prisma/client";
+import { config } from "dotenv";
 
 const prisma = new PrismaClient();
 
@@ -18,4 +18,5 @@ const configs = {
   MAIL_PASS: `${process.env.MAIL_PASS}`,
 };
 
+export * from "./mail.config";
 export { configs, prisma };
