@@ -6,6 +6,9 @@ import { NotificationValidation } from "../validations";
 const router = Router();
 
 // Require authentication for creating a notification
+router.get("/", authenticate.any, notificationController.readAll);
+
+// Require authentication for creating a notification
 router.post(
   "/",
   authenticate.any,
@@ -42,12 +45,18 @@ router.delete(
 );
 
 // Require authentication for deleting all notifications
-router.delete("/deleteAll", authenticate.any, notificationController.deleteAll);
+router.delete(
+  "/delete/many",
+  authenticate.any,
+  notificationController.deleteAll
+);
 
 // Require authentication for sending a notification to multiple users
 router.post(
-  "/sendAll",
+  "/send/many",
   authenticate.any,
+  NotificationValidation.sendMany,
+  validate,
   notificationController.sendToMultipleUsers
 );
 

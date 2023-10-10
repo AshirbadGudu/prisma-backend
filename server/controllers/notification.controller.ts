@@ -41,13 +41,16 @@ export const notificationController: {
 
   async readAll(req, res, next) {
     try {
-      const { skip, take, search } = req.query;
+      const { skip, take, search, userId, readStatus } = req.query;
 
       const { notifications, pagination } = await notificationService.readAll({
         skip: skip ? Number(skip) : undefined,
         take: take ? Number(take) : undefined,
         search: search ? String(search) : undefined,
+        userId: userId ? String(userId) : undefined,
+        isRead: readStatus ? readStatus === "true" : undefined,
       });
+
       if (!notifications) throw new NotFound("Notifications not found");
       res.json({
         success: true,
@@ -109,10 +112,11 @@ export const notificationController: {
 
   async sendToMultipleUsers(req, res, next) {
     try {
-      const { userIds, notificationData } = req.body;
+      const { userIds, sendAll, ...notificationData } = req.body;
       const notifications = await notificationService.sendToMultipleUsers(
         userIds,
-        notificationData
+        notificationData,
+        sendAll
       );
 
       res.json({

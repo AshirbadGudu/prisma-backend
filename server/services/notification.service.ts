@@ -5,6 +5,8 @@ interface GetOptions {
   skip?: number;
   take?: number;
   search?: string;
+  userId?: string;
+  isRead?: boolean;
 }
 
 export const notificationService = {
@@ -16,7 +18,7 @@ export const notificationService = {
     return notification;
   },
   async readAll(options: GetOptions = {}) {
-    const { skip, take, search } = options;
+    const { skip, take, search, isRead, userId } = options;
 
     let where: Prisma.NotificationWhereInput = {};
 
@@ -27,6 +29,16 @@ export const notificationService = {
           { body: { contains: search, mode: "insensitive" } },
         ],
       };
+    }
+
+    // Add the condition to filter by isRead (if provided)
+    if (isRead !== undefined) {
+      where.isRead = isRead; // Convert isRead to a boolean
+    }
+
+    // Add the condition to filter by userId (if provided)
+    if (userId) {
+      where.userId = userId;
     }
 
     let notifications;
@@ -55,7 +67,6 @@ export const notificationService = {
       pagination: { skip, take, total },
     };
   },
-
   async update(id: string, data: Prisma.NotificationUpdateInput) {
     const isNotificationExists = await prisma.notification.findUnique({
       where: { id },
@@ -92,11 +103,18 @@ export const notificationService = {
 
   async sendToMultipleUsers(
     userIds: string[],
-    input: Prisma.NotificationCreateInput
+    input: Prisma.NotificationCreateInput,
+    sendAll?: boolean
   ) {
+    let selectedUserIds = userIds;
+    if (sendAll) {
+      selectedUserIds = (
+        await prisma.user.findMany({ select: { id: true } })
+      ).map((_) => _.id);
+    }
     // Create notifications and associate them with multiple users
     const notifications = await Promise.all(
-      userIds.map(async (userId) => {
+      selectedUserIds.map(async (userId) => {
         const notification = await prisma.notification.create({
           data: {
             ...input,

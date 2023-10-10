@@ -136,7 +136,10 @@ export const userService = {
     return deletedUser;
   },
   async readById(id: string) {
-    const user = await prisma.user.findUnique({ where: { id } });
+    const user = await prisma.user.findUnique({
+      where: { id },
+      include: { _count: true },
+    });
     return user;
   },
 };
