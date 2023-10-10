@@ -1,1 +1,2 @@
-export { userService } from "./user.service";
+export * from "./notification.service";
+export * from "./user.service";

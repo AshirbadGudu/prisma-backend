@@ -1,2 +1,3 @@
-export { mailController } from "./mail.controller";
-export { userController } from "./user.controller";
+export * from "./mail.controller";
+export * from "./notification.controller";
+export * from "./user.controller";
