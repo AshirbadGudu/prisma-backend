@@ -8,6 +8,8 @@ export const notificationController: {
   readAll: RequestHandler;
   update: RequestHandler;
   delete: RequestHandler;
+  deleteAll: RequestHandler;
+  sendToMultipleUsers: RequestHandler;
 } = {
   async create(req, res, next) {
     try {
@@ -85,6 +87,38 @@ export const notificationController: {
         success: true,
         msg: "Notification deleted successfully",
         data: deletedNotification,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async deleteAll(req, res, next) {
+    try {
+      const deletedNotifications = await notificationService.deleteAll();
+
+      res.json({
+        success: true,
+        msg: "All notifications deleted successfully",
+        data: deletedNotifications,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async sendToMultipleUsers(req, res, next) {
+    try {
+      const { userIds, notificationData } = req.body;
+      const notifications = await notificationService.sendToMultipleUsers(
+        userIds,
+        notificationData
+      );
+
+      res.json({
+        success: true,
+        msg: "Notifications sent to multiple users successfully",
+        data: notifications,
       });
     } catch (error) {
       next(error);

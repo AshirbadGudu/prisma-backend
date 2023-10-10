@@ -83,4 +83,29 @@ export const notificationService = {
     });
     return notification;
   },
+
+  async deleteAll() {
+    // Delete all notifications
+    const deletedNotifications = await prisma.notification.deleteMany({});
+    return deletedNotifications;
+  },
+
+  async sendToMultipleUsers(
+    userIds: string[],
+    input: Prisma.NotificationCreateInput
+  ) {
+    // Create notifications and associate them with multiple users
+    const notifications = await Promise.all(
+      userIds.map(async (userId) => {
+        const notification = await prisma.notification.create({
+          data: {
+            ...input,
+            user: { connect: { id: userId } },
+          },
+        });
+        return notification;
+      })
+    );
+    return notifications;
+  },
 };

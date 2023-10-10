@@ -8,7 +8,7 @@ const router = Router();
 // Require authentication for creating a notification
 router.post(
   "/",
-  authenticate.any, // You can specify the required authentication middleware here
+  authenticate.any,
   NotificationValidation.create,
   validate,
   notificationController.create
@@ -17,7 +17,7 @@ router.post(
 // Require authentication for updating a notification
 router.put(
   "/:id",
-  authenticate.any, // You can specify the required authentication middleware here
+  authenticate.any,
   NotificationValidation.update,
   validate,
   notificationController.update
@@ -26,7 +26,7 @@ router.put(
 // Require authentication for getting notification by ID
 router.get(
   "/:id",
-  authenticate.any, // You can specify the required authentication middleware here
+  authenticate.any,
   NotificationValidation.readById,
   validate,
   notificationController.readById
@@ -35,10 +35,20 @@ router.get(
 // Require authentication for deleting a notification
 router.delete(
   "/:id",
-  authenticate.any, // You can specify the required authentication middleware here
+  authenticate.any,
   NotificationValidation.delete,
   validate,
   notificationController.delete
+);
+
+// Require authentication for deleting all notifications
+router.delete("/deleteAll", authenticate.any, notificationController.deleteAll);
+
+// Require authentication for sending a notification to multiple users
+router.post(
+  "/sendAll",
+  authenticate.any,
+  notificationController.sendToMultipleUsers
 );
 
 export default router;
