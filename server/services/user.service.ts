@@ -37,7 +37,7 @@ export const userService = {
     const { password } = input;
     const email = input.email.toLowerCase();
     const user = await prisma.user.findUnique({ where: { email } });
-    if (!user) throw new Error("Invalid login attempt");
+    if (!user) throw new Error("No user found please recheck the email!");
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) throw new Error("Invalid password");
     const token = jwt.sign({ userId: user.id }, configs.JWT_SECRET);
@@ -77,7 +77,6 @@ export const userService = {
       where,
       skip,
       take,
-      include: { Business: true },
     });
 
     return {
@@ -121,10 +120,7 @@ export const userService = {
     return deletedUser;
   },
   async readById(id: string) {
-    const user = await prisma.user.findUnique({
-      where: { id },
-      include: { _count: true },
-    });
+    const user = await prisma.user.findUnique({ where: { id } });
     return user;
   },
 };
