@@ -64,7 +64,7 @@ export const userService = {
     return user;
   },
   async readAll(options: GetUsersOptions = {}) {
-    const { skip = 0, take = 20, search } = options;
+    const { skip, take, search } = options;
     const where: Prisma.UserWhereInput = search
       ? {
           OR: [
@@ -73,15 +73,31 @@ export const userService = {
           ],
         }
       : {};
-    const users = await prisma.user.findMany({
-      where,
-      skip,
-      take,
-    });
+
+    let users;
+    let total;
+
+    // Check if both skip and take options are provided for pagination
+    if (skip !== undefined && take !== undefined) {
+      users = await prisma.user.findMany({
+        where,
+        skip,
+        take,
+      });
+
+      total = await prisma.user.count({ where });
+    } else {
+      // If skip or take is not provided, fetch all data without pagination
+      users = await prisma.user.findMany({
+        where,
+      });
+
+      total = users.length;
+    }
 
     return {
       users,
-      pagination: { skip, take, total: await prisma.user.count({ where }) },
+      pagination: { skip, take, total },
     };
   },
   async update(id: string, data: Prisma.UserUpdateInput) {
