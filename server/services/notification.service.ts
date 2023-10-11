@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client";
-import { prisma } from "../configs";
+import { admin, prisma } from "../configs";
 
 interface GetOptions {
   skip?: number;
@@ -15,6 +15,60 @@ export const notificationService = {
     const notification = await prisma.notification.create({
       data: input,
     });
+
+    // Get the FCM tokens of the user receiving the notification
+    const userTokens = await prisma.user.findMany({
+      where: { id: input.id }, // Assuming the user ID is stored in input.userId
+      select: { fcmToken: true },
+    });
+
+    const tokens = userTokens.map(({ fcmToken }) => [
+      fcmToken?.android,
+      fcmToken?.ios,
+      fcmToken?.web,
+    ]);
+
+    // Flatten the tokens array and remove any undefined or null values
+    const validTokens = tokens?.flat().filter((token) => !!token) as string[];
+
+    if (validTokens.length === 0) {
+      // No valid FCM tokens to send a notification
+      return notification;
+    }
+
+    const payload = {
+      notification: {
+        title: input.title,
+        body: input.body,
+      },
+      data: {
+        title: input.title,
+        body: input.body,
+      },
+    };
+
+    // Send a multicast notification to all valid tokens
+    const response = await admin.messaging().sendMulticast({
+      tokens: validTokens,
+      notification: payload.notification,
+      data: payload.data,
+    });
+
+    // Handle the response if needed
+    response.responses.forEach((result, index) => {
+      if (result.error) {
+        console.error(
+          `Failed to send notification to user with token ${validTokens[index]}: ${result.error}`
+        );
+        // Handle the error as needed
+      } else {
+        console.log(
+          `Notification sent to user with token ${validTokens[index]}`
+        );
+        // Handle the success as needed
+      }
+    });
+
     return notification;
   },
   async readAll(options: GetOptions = {}) {
@@ -139,12 +193,13 @@ export const notificationService = {
     sendAll?: boolean
   ) {
     let selectedUserIds = userIds;
+
     if (sendAll) {
       selectedUserIds = (
         await prisma.user.findMany({ select: { id: true } })
-      ).map((_) => _.id);
+      ).map((user) => user.id);
     }
-    // Create notifications and associate them with multiple users
+
     const notifications = await Promise.all(
       selectedUserIds.map(async (userId) => {
         const notification = await prisma.notification.create({
@@ -153,9 +208,58 @@ export const notificationService = {
             user: { connect: { id: userId } },
           },
         });
+
+        // Get the FCM token of the user receiving the notification
+        const user = await prisma.user.findUnique({
+          where: { id: userId },
+          select: { fcmToken: true },
+        });
+
+        if (user && user.fcmToken) {
+          const validTokens = [
+            user.fcmToken.android,
+            user.fcmToken.ios,
+            user.fcmToken.web,
+          ].filter((token) => !!token) as string[];
+
+          if (validTokens.length > 0) {
+            const payload = {
+              notification: {
+                title: input.title,
+                body: input.body,
+              },
+              data: {
+                title: input.title,
+                body: input.body,
+              },
+            };
+
+            const response = await admin.messaging().sendMulticast({
+              tokens: validTokens,
+              notification: payload.notification,
+              data: payload.data,
+            });
+
+            response.responses.forEach((result, index) => {
+              if (result.error) {
+                console.error(
+                  `Failed to send notification to user ${userId} with token ${validTokens[index]}: ${result.error}`
+                );
+                // Handle the error as needed
+              } else {
+                console.log(
+                  `Notification sent to user ${userId} with token ${validTokens[index]}`
+                );
+                // Handle the success as needed
+              }
+            });
+          }
+        }
+
         return notification;
       })
     );
+
     return notifications;
   },
 };
