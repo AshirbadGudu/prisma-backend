@@ -74,7 +74,9 @@ export const fileController: {
                 const webpFileName = "converted_" + file.originalname + ".webp";
                 // Save the WebP file to a folder
                 const outputPath = "./uploads/webp/" + webpFileName;
+                // logic to upload s3 or any other provider
                 fs.writeFileSync(outputPath, webpBuffer);
+                // logic to delete the file from uploads
                 return {
                   originalname: file.originalname,
                   webpFileName: webpFileName,
