@@ -1,22 +1,10 @@
 import cors from "cors";
 import express from "express";
 import helmet from "helmet";
-import multer from "multer";
+import { upload } from "./configs";
 import { ListenerPlugin, RouterPlugin } from "./plugins";
 
 const app = express();
-
-// Configure Multer for file uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/"); // Set the destination folder for uploaded files
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + "-" + file.originalname); // Set the file name for uploaded files
-  },
-});
-
-const upload = multer({ storage });
 
 app
   .use(helmet())

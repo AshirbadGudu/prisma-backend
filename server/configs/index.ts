@@ -23,6 +23,7 @@ const configs = {
   CLIENT_EMAIL: `${process.env.CLIENT_EMAIL}`,
 };
 
-export * from "./mail.config";
 export * from "./firebase.config";
+export * from "./mail.config";
+export * from "./storage.config";
 export { configs, prisma };
